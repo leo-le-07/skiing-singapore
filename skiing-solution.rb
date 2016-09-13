@@ -7,7 +7,7 @@ class Elevation
     @value = value
     @parent = nil
     @root = nil
-    @weight = 1 
+    @weight = 1
   end
 end
 
@@ -26,7 +26,7 @@ class Skii
   end
 
   def load_input
-    File.foreach("input_4.txt").with_index do |line, index|
+    File.foreach("input_3.txt").with_index do |line, index|
       if index == 0
         @arr_row = line.split[0].to_i
         @arr_column = line.split[1].to_i
@@ -39,7 +39,7 @@ class Skii
   def sort_arr_input_by_topology
     @arr_input.each_with_index do |x, idx_row|
       x.each_with_index do |cell, idx_col|
-        if unvisited?(idx_row, idx_col) 
+        if unvisited?(idx_row, idx_col)
           visit(idx_row, idx_col)
         end
       end
@@ -48,20 +48,20 @@ class Skii
 
   def visit(i, j)
     @hash_visited[gen_key(i, j)] = 1
-    if (j > 0 && @arr_input[i][j-1] < @arr_input[i][j] && unvisited?(i, j-1))
+    if (j > 0 && @arr_input[i][j-1].to_i < @arr_input[i][j].to_i && unvisited?(i, j-1))
       visit(i, j-1)
     end
-    if (i < @arr_row - 1 && @arr_input[i+1][j] < @arr_input[i][j] && unvisited?(i+1, j))
+    if (i < @arr_row - 1 && @arr_input[i+1][j].to_i < @arr_input[i][j].to_i && unvisited?(i+1, j))
       visit(i+1, j)
     end
-    if (j < @arr_column - 1 && @arr_input[i][j+1] < @arr_input[i][j] && unvisited?(i, j+1))
+    if (j < @arr_column - 1 && @arr_input[i][j+1].to_i < @arr_input[i][j].to_i && unvisited?(i, j+1))
       visit(i, j+1)
     end
-    if (i > 0 && @arr_input[i-1][j] < @arr_input[i][j] && unvisited?(i-1, j))
+    if (i > 0 && @arr_input[i-1][j].to_i < @arr_input[i][j].to_i && unvisited?(i-1, j))
       visit(i-1, j)
     end
     tmp = Array.new
-    tmp.push(i).push(j).push(@arr_input[i][j])
+    tmp.push(i).push(j).push(@arr_input[i][j].to_i)
     @arr_sorted.push(tmp)
   end
 
@@ -95,7 +95,10 @@ class Skii
     if ((@key_weightest == nil) ||
         (@key_weightest != nil && @hash_elevations[current_key].weight > @hash_elevations[@key_weightest].weight) ||
         (@key_weightest != nil && @hash_elevations[current_key].weight == @hash_elevations[@key_weightest].weight &&
-           @hash_elevations[current_key].root.value > @hash_elevations[@key_weightest].root.value))
+           @hash_elevations[current_key].root.value > @hash_elevations[@key_weightest].root.value) ||
+        (@key_weightest != nil && @hash_elevations[current_key].weight == @hash_elevations[@key_weightest].weight &&
+          @hash_elevations[current_key].root.value == @hash_elevations[@key_weightest].root.value &&
+          @hash_elevations[current_key].value < @hash_elevations[@key_weightest].value))
       @key_weightest = current_key
     end
   end
@@ -112,7 +115,7 @@ class Skii
 
     weightest_elevation
   end
- 
+
   def get_weightest_elevation(weightest_elevation, elevation, position)
     if (@hash_elevations.has_key?(gen_key(position[0], position[1])) && @hash_elevations[gen_key(position[0], position[1])].value > elevation.value)
       compared_elevation = @hash_elevations[gen_key(position[0], position[1])]
@@ -131,13 +134,12 @@ class Skii
     sort_arr_input_by_topology()
     find_longest_deeper_path()
     finish = Time.now
-    
-    # print_result()
-    
     puts "Time finding: #{finish - start}"
+
+    #print_result()
     print_longest_path()
-    # print_arr_topo()
-    # print_hash_elevation()
+    #print_arr_topo()
+    #print_hash_elevation()
   end
 
   private
